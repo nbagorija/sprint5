@@ -30,7 +30,10 @@ func (t Training) distance() float64 {
 
 // meanSpeed возвращает среднюю скорость тренировки.
 func (t Training) meanSpeed() float64 {
-	return t.distance() / t.Duration.Seconds() * MinInHours
+	if t.Duration == 0 {
+		return 0
+	}
+	return t.distance() / t.Duration.Hours()
 }
 
 // Calories возвращает количество потраченных килокалорий на тренировке.
@@ -61,14 +64,13 @@ func (t Training) TrainingInfo() InfoMessage {
 
 // String возвращает строку с информацией о проведенной тренировке.
 func (i InfoMessage) String() string {
-	return fmt.Sprintf("Тип тренировки: %s\nДлительность: %.0f мин\nДистанция: %.2f км.\nСр. скорость: %.2f км/ч\nПотрачено ккал: %.2f\n",
+	return fmt.Sprintf("Тип тренировки: %s\nДлительность: %v мин\nДистанция: %.2f км.\nСр. скорость: %.2f км/ч\nПотрачено ккал: %.2f\n",
 		i.TrainingType,
 		i.Duration.Minutes(),
 		i.Distance,
 		i.Speed,
 		i.Calories,
 	)
-
 }
 
 // CaloriesCalculator интерфейс для структур: Running, Walking и Swimming.
@@ -139,7 +141,10 @@ type Swimming struct {
 
 // meanSpeed возвращает среднюю скорость при плавании.
 func (s Swimming) meanSpeed() float64 {
-	return float64(s.LengthPool*s.CountPool) / MInKm / s.Duration.Seconds() * MinInHours
+	if s.Duration == 0 {
+		return 0
+	}
+	return float64(s.LengthPool*s.CountPool) / MInKm / s.Duration.Hours()
 }
 
 // Calories возвращает количество калорий, потраченных при плавании.
@@ -150,7 +155,10 @@ func (s Swimming) Calories() float64 {
 
 // TrainingInfo возвращает структуру InfoMessage с информацией о проведенной тренировке.
 func (s Swimming) TrainingInfo() InfoMessage {
-	return s.Training.TrainingInfo()
+	// Пересчитываем информацию о тренировке с использованием переопределенной функции meanSpeed
+	info := s.Training.TrainingInfo()
+	info.Speed = s.meanSpeed() // Используем переопределённую функцию
+	return info
 }
 
 // ReadData возвращает информацию о проведенной тренировке.
