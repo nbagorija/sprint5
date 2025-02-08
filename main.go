@@ -68,6 +68,7 @@ func (i InfoMessage) String() string {
 		i.Speed,
 		i.Calories,
 	)
+
 }
 
 // CaloriesCalculator интерфейс для структур: Running, Walking и Swimming.
